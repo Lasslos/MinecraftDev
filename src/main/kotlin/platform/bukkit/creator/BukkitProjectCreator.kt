@@ -11,23 +11,14 @@
 package com.demonwav.mcdev.platform.bukkit.creator
 
 import com.demonwav.mcdev.creator.BaseProjectCreator
-import com.demonwav.mcdev.creator.BasicJavaClassStep
+import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreateDirectoriesStep
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.buildsystem.BuildDependency
 import com.demonwav.mcdev.creator.buildsystem.BuildRepository
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleSetupStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
-import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenStep
-import com.demonwav.mcdev.creator.buildsystem.maven.CommonModuleDependencyStep
-import com.demonwav.mcdev.creator.buildsystem.maven.MavenBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.maven.MavenGitignoreStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.*
+import com.demonwav.mcdev.creator.buildsystem.maven.*
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.util.MinecraftVersions
 import com.demonwav.mcdev.util.SemanticVersion
@@ -43,9 +34,9 @@ sealed class BukkitProjectCreator<T : BuildSystem>(
     protected val config: BukkitProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
 
-    protected fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
-            BukkitTemplate.applyMainClass(project, packageName, className)
+    protected fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
+            BukkitTemplate.applyMainClass(project, packageName, className, config.language)
         }
     }
 
@@ -67,7 +58,7 @@ class BukkitMavenCreator(
 ) : BukkitProjectCreator<MavenBuildSystem>(rootDirectory, rootModule, buildSystem, config) {
 
     override fun getSingleModuleSteps(): Iterable<CreatorStep> {
-        val pomText = BukkitTemplate.applyPom(project)
+        val pomText = BukkitTemplate.applyPom(project, config.language)
         return listOf(
             setupDependencyStep(),
             BasicMavenStep(project, rootDirectory, buildSystem, config, pomText),
@@ -111,7 +102,7 @@ class BukkitGradleCreator(
 ) : BukkitProjectCreator<GradleBuildSystem>(rootDirectory, rootModule, buildSystem, config) {
 
     override fun getSingleModuleSteps(): Iterable<CreatorStep> {
-        val buildText = BukkitTemplate.applyBuildGradle(project, buildSystem)
+        val buildText = BukkitTemplate.applyBuildGradle(project, buildSystem, config.language)
         val propText = BukkitTemplate.applyGradleProp(project)
         val settingsText = BukkitTemplate.applySettingsGradle(project, buildSystem.artifactId)
         val files = GradleFiles(buildText, propText, settingsText)

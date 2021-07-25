@@ -1,5 +1,10 @@
 plugins {
-    id 'java'
+    #if(${USE_JAVA})
+        id 'java'
+    #end
+    #if(${USE_KOTLIN})
+        id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    #end
 }
 
 group = '${GROUP_ID}'
@@ -10,6 +15,9 @@ repositories {
 }
 
 dependencies {
+    #if (${USE_KOTLIN})
+        implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    #end
 }
 
 def targetJavaVersion = 8

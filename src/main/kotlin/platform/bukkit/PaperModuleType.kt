@@ -12,6 +12,7 @@ package com.demonwav.mcdev.platform.bukkit
 
 import com.demonwav.mcdev.asset.PlatformAssets
 import com.demonwav.mcdev.facet.MinecraftFacet
+import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.platform.bukkit.generation.BukkitEventGenerationPanel
@@ -32,6 +33,7 @@ object PaperModuleType : AbstractModuleType<BukkitModule<PaperModuleType>>("com.
     override val platformType = PlatformType.PAPER
     override val icon = PlatformAssets.PAPER_ICON
     override val id = ID
+    override val supportedLanguages: List<LanguageType> = listOf(LanguageType.JAVA, LanguageType.KOTLIN)
     override val ignoredAnnotations = BukkitModuleType.IGNORED_ANNOTATIONS
     override val listenerAnnotations = BukkitModuleType.LISTENER_ANNOTATIONS
     override val isEventGenAvailable = true

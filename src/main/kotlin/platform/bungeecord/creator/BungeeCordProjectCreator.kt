@@ -11,23 +11,14 @@
 package com.demonwav.mcdev.platform.bungeecord.creator
 
 import com.demonwav.mcdev.creator.BaseProjectCreator
-import com.demonwav.mcdev.creator.BasicJavaClassStep
+import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreateDirectoriesStep
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.buildsystem.BuildDependency
 import com.demonwav.mcdev.creator.buildsystem.BuildRepository
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleSetupStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
-import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenStep
-import com.demonwav.mcdev.creator.buildsystem.maven.CommonModuleDependencyStep
-import com.demonwav.mcdev.creator.buildsystem.maven.MavenBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.maven.MavenGitignoreStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.*
+import com.demonwav.mcdev.creator.buildsystem.maven.*
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.platform.bukkit.creator.BukkitDependenciesStep
 import com.intellij.openapi.module.Module
@@ -42,8 +33,8 @@ sealed class BungeeCordProjectCreator<T : BuildSystem>(
     protected val config: BungeeCordProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
 
-    protected fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    protected fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             BungeeCordTemplate.applyMainClass(project, packageName, className)
         }
     }

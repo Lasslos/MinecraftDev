@@ -11,16 +11,11 @@
 package com.demonwav.mcdev.platform.forge.creator
 
 import com.demonwav.mcdev.creator.BaseProjectCreator
-import com.demonwav.mcdev.creator.BasicJavaClassStep
+import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.LicenseStep
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.SimpleGradleSetupStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.*
 import com.demonwav.mcdev.platform.forge.util.ForgeConstants
 import com.demonwav.mcdev.platform.forge.util.ForgePackDescriptor
 import com.demonwav.mcdev.util.MinecraftVersions
@@ -32,9 +27,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption.CREATE
-import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-import java.nio.file.StandardOpenOption.WRITE
+import java.nio.file.StandardOpenOption.*
 
 class Fg2ProjectCreator(
     private val rootDirectory: Path,
@@ -44,8 +37,8 @@ class Fg2ProjectCreator(
     private val mcVersion: SemanticVersion
 ) : BaseProjectCreator(rootModule, buildSystem) {
 
-    private fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    private fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             Fg2Template.applyMainClass(project, buildSystem, config, packageName, className)
         }
     }
@@ -104,8 +97,8 @@ open class Fg3ProjectCreator(
     protected val config: ForgeProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
 
-    private fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    private fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             if (config.mcVersion >= MinecraftVersions.MC1_17) {
                 Fg3Template.apply1_17MainClass(project, buildSystem, config, packageName, className)
             } else {
@@ -191,8 +184,8 @@ class Fg3Mc112ProjectCreator(
     config: ForgeProjectConfig
 ) : Fg3ProjectCreator(rootDirectory, rootModule, buildSystem, config) {
 
-    private fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    private fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             Fg2Template.applyMainClass(project, buildSystem, config, packageName, className)
         }
     }

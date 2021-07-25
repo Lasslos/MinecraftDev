@@ -11,14 +11,9 @@
 package com.demonwav.mcdev.platform.liteloader.creator
 
 import com.demonwav.mcdev.creator.BaseProjectCreator
-import com.demonwav.mcdev.creator.BasicJavaClassStep
+import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreatorStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
-import com.demonwav.mcdev.creator.buildsystem.gradle.SimpleGradleSetupStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.*
 import com.demonwav.mcdev.platform.forge.creator.SetupDecompWorkspaceStep
 import com.intellij.openapi.module.Module
 import java.nio.file.Path
@@ -30,8 +25,8 @@ class LiteLoaderProjectCreator(
     private val config: LiteLoaderProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
 
-    private fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    private fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             val modName = config.pluginName
             LiteLoaderTemplate.applyMainClass(project, packageName, className, modName, buildSystem.version)
         }

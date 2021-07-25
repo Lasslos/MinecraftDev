@@ -14,13 +14,15 @@ import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
 import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenStep
+import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.BaseTemplate
 import com.demonwav.mcdev.platform.bukkit.BukkitLikeConfiguration
 import com.demonwav.mcdev.platform.bukkit.BukkitModuleType
 import com.demonwav.mcdev.platform.bukkit.data.LoadOrder
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_BUILD_GRADLE_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_GRADLE_PROPERTIES_TEMPLATE
-import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_MAIN_CLASS_TEMPLATE
+import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
+import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_PLUGIN_YML_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_POM_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_SETTINGS_GRADLE_TEMPLATE
@@ -33,29 +35,42 @@ object BukkitTemplate : BaseTemplate() {
     fun applyMainClass(
         project: Project,
         packageName: String,
-        className: String
+        className: String,
+        languageType: LanguageType
     ): String {
         val props = mapOf(
             "PACKAGE" to packageName,
             "CLASS_NAME" to className
         )
 
-        return project.applyTemplate(BUKKIT_MAIN_CLASS_TEMPLATE, props)
+        return project.applyTemplate(
+            when (languageType) {
+                LanguageType.JAVA -> BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
+                LanguageType.KOTLIN -> BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
+            }, props
+        )
     }
 
-    fun applyPom(project: Project): String {
-        return project.applyTemplate(BUKKIT_POM_TEMPLATE, BasicMavenStep.pluginVersions)
+    fun applyPom(project: Project, languageType: LanguageType): String {
+        val properties = BasicMavenStep.pluginVersions.toMutableMap()
+        if (languageType == LanguageType.KOTLIN)
+            properties["USE_KOTLIN"] = "true"
+        return project.applyTemplate(BUKKIT_POM_TEMPLATE, properties)
     }
 
     fun applySubPom(project: Project): String {
         return project.applyTemplate(BUKKIT_SUBMODULE_POM_TEMPLATE, BasicMavenStep.pluginVersions)
     }
 
-    fun applyBuildGradle(project: Project, buildSystem: BuildSystem): String {
-        val props = mapOf(
+    fun applyBuildGradle(project: Project, buildSystem: BuildSystem, languageType: LanguageType): String {
+        val props = mutableMapOf(
             "GROUP_ID" to buildSystem.groupId,
             "PLUGIN_VERSION" to buildSystem.version
         )
+        props[when (languageType) {
+            LanguageType.JAVA -> "USE_JAVA"
+            LanguageType.KOTLIN -> "USE_KOTLIN"
+        }] = "true"
 
         return project.applyTemplate(BUKKIT_BUILD_GRADLE_TEMPLATE, props)
     }

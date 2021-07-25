@@ -12,6 +12,7 @@ package com.demonwav.mcdev.creator
 
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
 import com.demonwav.mcdev.creator.buildsystem.DirectorySet
+import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.util.runWriteTask
 import com.demonwav.mcdev.util.virtualFileOrError
 import com.intellij.codeInsight.actions.ReformatCodeProcessor
@@ -28,9 +29,7 @@ import com.intellij.psi.util.createSmartPointer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption.CREATE
-import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-import java.nio.file.StandardOpenOption.WRITE
+import java.nio.file.StandardOpenOption.*
 
 /**
  * Represents a discrete kind of configuration code for a project. Project creators use these to spread implementation
@@ -90,9 +89,10 @@ interface CreatorStep {
     }
 }
 
-class BasicJavaClassStep(
+class BasicClassStep(
     private val project: Project,
     private val buildSystem: BuildSystem,
+    private val languageType: LanguageType,
     private val className: String,
     private val classText: String,
     private val openInEditor: Boolean = true,
@@ -106,7 +106,8 @@ class BasicJavaClassStep(
 
             val sourceDir = getMainClassDirectory(rootProvider(buildSystem), files)
 
-            val classFile = CreatorStep.writeTextToFile(project, sourceDir, "$className.java", classText)
+            val fileEnding = languageType.getInstance().fileEnding
+            val classFile = CreatorStep.writeTextToFile(project, sourceDir, "$className$fileEnding", classText)
 
             if (openInEditor) {
                 // Set the editor focus on the created class

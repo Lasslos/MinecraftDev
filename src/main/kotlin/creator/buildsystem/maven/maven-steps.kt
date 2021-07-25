@@ -13,12 +13,9 @@ package com.demonwav.mcdev.creator.buildsystem.maven
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.MinecraftProjectCreator
 import com.demonwav.mcdev.creator.ProjectConfig
-import com.demonwav.mcdev.creator.buildsystem.BuildDependency
-import com.demonwav.mcdev.creator.buildsystem.BuildSystem
-import com.demonwav.mcdev.creator.buildsystem.BuildSystemTemplate
-import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
-import com.demonwav.mcdev.creator.buildsystem.DirectorySet
+import com.demonwav.mcdev.creator.buildsystem.*
 import com.demonwav.mcdev.creator.getVersionJson
+import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.util.invokeLater
 import com.demonwav.mcdev.util.runWriteAction
@@ -37,9 +34,7 @@ import com.intellij.psi.xml.XmlTag
 import com.intellij.util.xml.DomManager
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption.CREATE
-import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
-import java.nio.file.StandardOpenOption.WRITE
+import java.nio.file.StandardOpenOption.*
 import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel
 import org.jetbrains.idea.maven.execution.MavenRunConfigurationType
 import org.jetbrains.idea.maven.execution.MavenRunnerParameters
@@ -109,7 +104,8 @@ class BasicMavenStep(
         private val defaultParts = listOf(setupDirs(), setupCore(), setupName(), setupInfo(), setupDependencies())
 
         fun setupDirs(): MavenStepFunc = { step, _, _ ->
-            step.buildSystem.directories = DirectorySet.create(step.rootDirectory)
+            step.buildSystem.directories =
+                DirectorySet.create(step.rootDirectory, step.config?.language ?: LanguageType.JAVA)
         }
 
         fun setupCore(): MavenStepFunc = { step, model, _ ->

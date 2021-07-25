@@ -12,7 +12,12 @@
   <name></name>
 
   <properties>
-    <java.version>1.8</java.version>
+    #if (${USE_JAVA})
+      <java.version>1.8</java.version>
+    #end
+    #if (${USE_KOTLIN})
+      <kotlin.version>1.5.21</kotlin.version>
+    #end
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -43,6 +48,7 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
     <resources>
       <resource>
@@ -54,5 +60,13 @@
 
   <repositories></repositories>
 
-  <dependencies></dependencies>
+  <dependencies>
+    #if (${USE_KOTLIN})
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlin.version}</version>
+      </dependency>
+    #end
+  </dependencies>
 </project>

@@ -21,7 +21,7 @@ import com.demonwav.mcdev.util.SemanticVersion
 import com.demonwav.mcdev.util.VersionRange
 import com.intellij.openapi.module.Module
 import java.nio.file.Path
-import java.util.Locale
+import java.util.*
 
 class GradleBuildSystem(
     groupId: String,

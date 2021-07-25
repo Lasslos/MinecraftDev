@@ -11,6 +11,7 @@
 package com.demonwav.mcdev.creator
 
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
+import com.demonwav.mcdev.language.LanguageType
 import com.intellij.openapi.module.Module
 import java.nio.file.Path
 
@@ -53,13 +54,14 @@ abstract class BaseProjectCreator(
     protected val project
         get() = rootModule.project
 
-    protected fun createJavaClassStep(
+    protected fun createClassStep(
         qualifiedClassName: String,
+        languageType: LanguageType,
         mapper: JavaClassTextMapper
-    ): BasicJavaClassStep {
+    ): BasicClassStep {
         val (packageName, className) = splitPackage(qualifiedClassName)
         val classText = mapper(packageName, className)
-        return BasicJavaClassStep(project, buildSystem, qualifiedClassName, classText)
+        return BasicClassStep(project, buildSystem, languageType, qualifiedClassName, classText)
     }
 
     protected fun splitPackage(text: String): Pair<String, String> {

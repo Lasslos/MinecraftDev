@@ -11,7 +11,7 @@
 package com.demonwav.mcdev.platform.velocity.creator
 
 import com.demonwav.mcdev.creator.BaseProjectCreator
-import com.demonwav.mcdev.creator.BasicJavaClassStep
+import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreateDirectoriesStep
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.buildsystem.BuildDependency
@@ -59,7 +59,7 @@ sealed class VelocityProjectCreator<T : BuildSystem>(
     }
 
     protected fun setupMainClassSteps(): Pair<CreatorStep, CreatorStep> {
-        val mainClassStep = createJavaClassStep(config.mainClass) { packageName, className ->
+        val mainClassStep = createClassStep(config.mainClass, config.language) { packageName, className ->
             val version = config.apiVersion
             VelocityTemplate.applyMainClass(project, packageName, className, config.hasDependencies(), version)
         }
@@ -162,10 +162,11 @@ class VelocityGradleCreator(
         )
     }
 
-    private fun buildConstantsStep(): BasicJavaClassStep {
-        return BasicJavaClassStep(
+    private fun buildConstantsStep(): BasicClassStep {
+        return BasicClassStep(
             project,
             buildSystem,
+            config.language,
             config.mainClass.replaceAfterLast('.', "BuildConstants"),
             VelocityTemplate.applyBuildConstants(project, config.mainClass.substringBeforeLast('.')),
             false

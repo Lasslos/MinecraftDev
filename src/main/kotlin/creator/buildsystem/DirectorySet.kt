@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.creator.buildsystem
 
+import com.demonwav.mcdev.language.LanguageType
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -20,10 +21,11 @@ data class DirectorySet(
     val testResourceDirectory: Path
 ) {
     companion object {
-        fun create(dir: Path): DirectorySet {
-            val sourceDirectory = dir.resolve("src/main/java")
+        fun create(dir: Path, languageType: LanguageType = LanguageType.JAVA): DirectorySet {
+            val sourceDirectory = dir.resolve("src/main/" + if (languageType == LanguageType.JAVA) "java" else "kotlin")
             val resourceDirectory = dir.resolve("src/main/resources")
-            val testSourceDirectory = dir.resolve("src/test/java")
+            val testSourceDirectory =
+                dir.resolve("src/test/" + if (languageType == LanguageType.JAVA) "java" else "kotlin")
             val testResourceDirectory = dir.resolve("src/test/resources")
             Files.createDirectories(sourceDirectory)
             Files.createDirectories(resourceDirectory)
