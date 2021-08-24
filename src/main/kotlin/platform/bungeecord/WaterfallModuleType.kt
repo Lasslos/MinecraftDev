@@ -11,8 +11,8 @@
 package com.demonwav.mcdev.platform.bungeecord
 
 import com.demonwav.mcdev.asset.PlatformAssets
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.platform.bungeecord.generation.BungeeCordEventGenerationPanel
@@ -32,7 +32,7 @@ object WaterfallModuleType :
     override val platformType = PlatformType.WATERFALL
     override val icon = PlatformAssets.WATERFALL_ICON
     override val id = ID
-    override val supportedLanguages: List<LanguageType> = listOf(LanguageType.JAVA)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
     override val ignoredAnnotations = BungeeCordModuleType.IGNORED_ANNOTATIONS
     override val listenerAnnotations = BungeeCordModuleType.LISTENER_ANNOTATIONS
 

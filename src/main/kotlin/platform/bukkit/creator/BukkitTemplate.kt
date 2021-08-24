@@ -10,11 +10,11 @@
 
 package com.demonwav.mcdev.platform.bukkit.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
 import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenStep
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.BaseTemplate
 import com.demonwav.mcdev.platform.bukkit.BukkitLikeConfiguration
 import com.demonwav.mcdev.platform.bukkit.BukkitModuleType
@@ -36,7 +36,7 @@ object BukkitTemplate : BaseTemplate() {
         project: Project,
         packageName: String,
         className: String,
-        languageType: LanguageType
+        languageType: CreatorLanguage
     ): String {
         val props = mapOf(
             "PACKAGE" to packageName,
@@ -45,16 +45,16 @@ object BukkitTemplate : BaseTemplate() {
 
         return project.applyTemplate(
             when (languageType) {
-                LanguageType.JAVA -> BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
-                LanguageType.KOTLIN -> BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
+                CreatorLanguage.JAVA -> BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
+                CreatorLanguage.KOTLIN -> BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
             },
             props
         )
     }
 
-    fun applyPom(project: Project, languageType: LanguageType): String {
+    fun applyPom(project: Project, languageType: CreatorLanguage): String {
         val properties = BasicMavenStep.pluginVersions.toMutableMap()
-        if (languageType == LanguageType.KOTLIN) {
+        if (languageType == CreatorLanguage.KOTLIN) {
             properties["USE_KOTLIN"] = "true"
         }
         return project.applyTemplate(BUKKIT_POM_TEMPLATE, properties)
@@ -64,15 +64,15 @@ object BukkitTemplate : BaseTemplate() {
         return project.applyTemplate(BUKKIT_SUBMODULE_POM_TEMPLATE, BasicMavenStep.pluginVersions)
     }
 
-    fun applyBuildGradle(project: Project, buildSystem: BuildSystem, languageType: LanguageType): String {
+    fun applyBuildGradle(project: Project, buildSystem: BuildSystem, languageType: CreatorLanguage): String {
         val props = mutableMapOf(
             "GROUP_ID" to buildSystem.groupId,
             "PLUGIN_VERSION" to buildSystem.version
         )
         props[
             when (languageType) {
-                LanguageType.JAVA -> "USE_JAVA"
-                LanguageType.KOTLIN -> "USE_KOTLIN"
+                CreatorLanguage.JAVA -> "USE_JAVA"
+                CreatorLanguage.KOTLIN -> "USE_KOTLIN"
             }
         ] = "true"
 

@@ -11,8 +11,8 @@
 package com.demonwav.mcdev.platform.fabric
 
 import com.demonwav.mcdev.asset.PlatformAssets
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
 
@@ -26,7 +26,7 @@ object FabricModuleType : AbstractModuleType<FabricModule>("", "") {
     override val platformType = PlatformType.FABRIC
     override val icon = PlatformAssets.FABRIC_ICON
     override val id = ID
-    override val supportedLanguages: List<LanguageType> = listOf(LanguageType.JAVA)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
     override val ignoredAnnotations = IGNORED_ANNOTATIONS
     override val listenerAnnotations = LISTENER_ANNOTATIONS
 

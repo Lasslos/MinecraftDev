@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.creator.buildsystem.maven
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.MinecraftProjectCreator
 import com.demonwav.mcdev.creator.ProjectConfig
@@ -19,7 +20,6 @@ import com.demonwav.mcdev.creator.buildsystem.BuildSystemTemplate
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
 import com.demonwav.mcdev.creator.buildsystem.DirectorySet
 import com.demonwav.mcdev.creator.getVersionJson
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.util.invokeLater
 import com.demonwav.mcdev.util.runWriteAction
@@ -111,7 +111,7 @@ class BasicMavenStep(
 
         fun setupDirs(): MavenStepFunc = { step, _, _ ->
             step.buildSystem.directories =
-                DirectorySet.create(step.rootDirectory, step.config?.language ?: LanguageType.JAVA)
+                DirectorySet.create(step.rootDirectory, step.config?.language ?: CreatorLanguage.JAVA)
         }
 
         fun setupCore(): MavenStepFunc = { step, model, _ ->

@@ -10,8 +10,8 @@
 
 package creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.MinecraftProjectCreator
-import com.demonwav.mcdev.language.LanguageType
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import javax.swing.AbstractListModel
 import javax.swing.JComponent
@@ -23,7 +23,7 @@ import javax.swing.SwingConstants
 
 class LanguageChooserWizardStep(private val creator: MinecraftProjectCreator) : ModuleWizardStep() {
     private lateinit var panel: JPanel
-    private lateinit var languageList: JList<LanguageType>
+    private lateinit var languageList: JList<CreatorLanguage>
 
     override fun getComponent(): JComponent = panel
 
@@ -34,12 +34,12 @@ class LanguageChooserWizardStep(private val creator: MinecraftProjectCreator) : 
     override fun isStepVisible(): Boolean = getSupportedLanguages().size > 1
     override fun updateStep() {
         val oldSelectedIndex = languageList.selectedIndex
-        languageList.model = object : AbstractListModel<LanguageType>() {
+        languageList.model = object : AbstractListModel<CreatorLanguage>() {
             override fun getSize(): Int = getSupportedLanguages().size
-            override fun getElementAt(index: Int): LanguageType = getSupportedLanguages()[index]
+            override fun getElementAt(index: Int): CreatorLanguage = getSupportedLanguages()[index]
         }
-        languageList.cellRenderer = ListCellRenderer<LanguageType> { _, value, _, _, _ ->
-            JLabel(value.getInstance().displayName, value.getInstance().icon, SwingConstants.LEADING)
+        languageList.cellRenderer = ListCellRenderer<CreatorLanguage> { _, value, _, _, _ ->
+            JLabel(value.displayName, value.icon, SwingConstants.LEADING)
         }
         languageList.selectedIndex =
             if (oldSelectedIndex < languageList.model.size && oldSelectedIndex != -1) oldSelectedIndex
@@ -56,8 +56,8 @@ class LanguageChooserWizardStep(private val creator: MinecraftProjectCreator) : 
         }
     }
 
-    fun getSupportedLanguages(): List<LanguageType> {
-        var result = LanguageType.values().toMutableSet()
+    fun getSupportedLanguages(): List<CreatorLanguage> {
+        var result = CreatorLanguage.values().toMutableSet()
         creator.configs.forEach {
             result = result.intersect(it.type.type.supportedLanguages).toMutableSet()
         }

@@ -11,7 +11,6 @@
 package com.demonwav.mcdev.creator
 
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.PlatformType
 import com.intellij.util.containers.isNullOrEmpty
 import com.intellij.util.lang.JavaVersion
@@ -22,7 +21,7 @@ private val commaRegex = Regex("\\s*,\\s*")
 abstract class ProjectConfig {
 
     abstract var type: PlatformType
-    lateinit var language: LanguageType
+    lateinit var language: CreatorLanguage
     open val preferredBuildSystem: BuildSystemType? = null
 
     lateinit var pluginName: String

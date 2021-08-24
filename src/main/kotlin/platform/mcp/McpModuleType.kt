@@ -10,8 +10,8 @@
 
 package com.demonwav.mcdev.platform.mcp
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.platform.mcp.util.McpConstants
@@ -30,7 +30,7 @@ object McpModuleType : AbstractModuleType<McpModule>("", "") {
     override val platformType = PlatformType.MCP
     override val icon: Icon? = null
     override val id = ID
-    override val supportedLanguages: List<LanguageType> = listOf(LanguageType.JAVA)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
     override val ignoredAnnotations = emptyList<String>()
     override val listenerAnnotations = emptyList<String>()
     override val hasIcon = false

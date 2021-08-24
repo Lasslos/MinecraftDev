@@ -12,7 +12,6 @@ package com.demonwav.mcdev.creator
 
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
 import com.demonwav.mcdev.creator.buildsystem.DirectorySet
-import com.demonwav.mcdev.language.LanguageType
 import com.demonwav.mcdev.util.runWriteTask
 import com.demonwav.mcdev.util.virtualFileOrError
 import com.intellij.codeInsight.actions.ReformatCodeProcessor
@@ -94,7 +93,7 @@ interface CreatorStep {
 class BasicClassStep(
     private val project: Project,
     private val buildSystem: BuildSystem,
-    private val languageType: LanguageType,
+    private val languageType: CreatorLanguage,
     private val className: String,
     private val classText: String,
     private val openInEditor: Boolean = true,
@@ -108,7 +107,7 @@ class BasicClassStep(
 
             val sourceDir = getMainClassDirectory(rootProvider(buildSystem), files)
 
-            val fileEnding = languageType.getInstance().fileEnding
+            val fileEnding = languageType.fileEnding
             val classFile = CreatorStep.writeTextToFile(project, sourceDir, "$className$fileEnding", classText)
 
             if (openInEditor) {
