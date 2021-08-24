@@ -13,6 +13,8 @@ package com.demonwav.mcdev.util
 import com.demonwav.mcdev.asset.GeneralAssets
 import com.demonwav.mcdev.asset.PlatformAssets
 import com.demonwav.mcdev.creator.CreatorLanguage
+import com.demonwav.mcdev.creator.CreatorLanguage.JAVA
+import com.demonwav.mcdev.creator.CreatorLanguage.KOTLIN
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory
@@ -24,7 +26,7 @@ class MinecraftTemplates : FileTemplateGroupDescriptorFactory {
 
         FileTemplateGroupDescriptor("Bukkit", PlatformAssets.BUKKIT_ICON).let { bukkitGroup ->
             group.addTemplate(bukkitGroup)
-            bukkitGroup.addTemplate(FileTemplateDescriptor(BUKKIT_MAIN_CLASS_TEMPLATE))
+            bukkitGroup.registerLanguageVariants(BUKKIT_MAIN_CLASS_TEMPLATE, JAVA, KOTLIN)
             bukkitGroup.addTemplate(FileTemplateDescriptor(BUKKIT_PLUGIN_YML_TEMPLATE))
             bukkitGroup.addTemplate(FileTemplateDescriptor(BUKKIT_BUILD_GRADLE_TEMPLATE))
             bukkitGroup.addTemplate(FileTemplateDescriptor(BUKKIT_SUBMODULE_BUILD_GRADLE_TEMPLATE))
@@ -267,6 +269,15 @@ class MinecraftTemplates : FileTemplateGroupDescriptorFactory {
         const val FABRIC_BLOCK_TEMPLATE = "FabricBlock.java"
         const val FABRIC_ITEM_TEMPLATE = "FabricItem.java"
         const val FABRIC_ENCHANTMENT_TEMPLATE = "FabricEnchantment.java"
+    }
+
+    private fun FileTemplateGroupDescriptor.registerLanguageVariants(
+        fileName: String,
+        vararg languages: CreatorLanguage
+    ) {
+        for (language in languages) {
+            this.addTemplate(FileTemplateDescriptor(getLanguageVariant(fileName, language)))
+        }
     }
 
     private fun template(fileName: String, displayName: String? = null) = CustomDescriptor(fileName, displayName)

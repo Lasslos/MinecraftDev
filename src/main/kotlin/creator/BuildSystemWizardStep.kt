@@ -20,7 +20,10 @@ import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
+import java.awt.Component
+import javax.swing.DefaultListCellRenderer
 import javax.swing.JComboBox
+import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JTextField
 
@@ -95,6 +98,8 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
             languageBox.addItem(it)
         }
 
+        languageBox.renderer = LanguageCellRenderer
+
         if (languageBox.itemCount <= 1) {
             languageBox.isEnabled = false
         }
@@ -103,7 +108,7 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
             0 -> -1
             1 -> 0
             else -> {
-                if (oldSelectedIndex < languageBox.itemCount) {
+                if (oldSelectedIndex >= 0 && oldSelectedIndex < languageBox.itemCount) {
                     oldSelectedIndex
                 } else {
                     0
@@ -113,11 +118,11 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
     }
 
     private fun getSupportedLanguages(): List<CreatorLanguage> {
-        var result = CreatorLanguage.values().toMutableSet()
+        var result = CreatorLanguage.values().toSet()
         creator.configs.forEach {
-            result = result.intersect(it.supportedLanguages).toMutableSet()
+            result = result.intersect(it.supportedLanguages)
         }
-        return result.toMutableList().sorted()
+        return result.sorted()
     }
 
     override fun updateDataModel() {
@@ -165,6 +170,19 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
         }
 
         return true
+    }
+
+    object LanguageCellRenderer : DefaultListCellRenderer() {
+        override fun getListCellRendererComponent(
+            list: JList<*>?,
+            value: Any?,
+            index: Int,
+            isSelected: Boolean,
+            cellHasFocus: Boolean
+        ): Component {
+            val displayValue = (value as? CreatorLanguage)?.displayName
+            return super.getListCellRendererComponent(list, displayValue, index, isSelected, cellHasFocus)
+        }
     }
 
     companion object {
