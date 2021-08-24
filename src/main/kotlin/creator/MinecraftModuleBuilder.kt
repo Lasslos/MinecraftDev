@@ -35,7 +35,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import creator.LanguageChooserWizardStep
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -107,7 +106,6 @@ class MinecraftModuleBuilder : JavaModuleBuilder() {
     ): Array<ModuleWizardStep> {
         val baseSteps = arrayOf(
             BuildSystemWizardStep(creator),
-            LanguageChooserWizardStep(creator),
             BukkitProjectSettingsWizard(creator),
             SpongeProjectSettingsWizard(creator),
             ForgeProjectSettingsWizard(creator),

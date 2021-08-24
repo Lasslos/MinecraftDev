@@ -31,10 +31,16 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
     private lateinit var versionField: JTextField
     private lateinit var panel: JPanel
     private lateinit var buildSystemBox: JComboBox<BuildSystemType>
+    private lateinit var languageBox: JComboBox<CreatorLanguage>
 
     override fun getComponent() = panel
 
     override fun updateStep() {
+        updateBuildSystemBox()
+        updateLanguageBox()
+    }
+
+    private fun updateBuildSystemBox() {
         val previousBuildSystem = buildSystemBox.selectedItem
         buildSystemBox.removeAllItems()
         buildSystemBox.isEnabled = true
@@ -81,8 +87,45 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
             }
     }
 
+    private fun updateLanguageBox() {
+        val oldSelectedIndex = languageBox.selectedIndex
+
+        languageBox.removeAllItems()
+        getSupportedLanguages().forEach {
+            languageBox.addItem(it)
+        }
+
+        if (languageBox.itemCount <= 1) {
+            languageBox.isEnabled = false
+        }
+
+        languageBox.selectedIndex = when (languageBox.itemCount) {
+            0 -> -1
+            1 -> 0
+            else -> {
+                if (oldSelectedIndex < languageBox.itemCount) {
+                    oldSelectedIndex
+                } else {
+                    0
+                }
+            }
+        }
+    }
+
+    private fun getSupportedLanguages(): List<CreatorLanguage> {
+        var result = CreatorLanguage.values().toMutableSet()
+        creator.configs.forEach {
+            result = result.intersect(it.type.type.supportedLanguages).toMutableSet()
+        }
+        return result.toMutableList().sorted()
+    }
+
     override fun updateDataModel() {
         creator.buildSystem = createBuildSystem()
+
+        creator.configs.forEach {
+            it.language = languageBox.selectedItem as CreatorLanguage
+        }
     }
 
     private fun createBuildSystem(): BuildSystem {
