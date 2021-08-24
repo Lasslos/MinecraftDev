@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.liteloader.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -28,6 +29,8 @@ import java.nio.file.Path
 class LiteLoaderProjectConfig : ProjectConfig(), GradleCreator {
 
     lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var mcpVersion = McpVersionPair("", SemanticVersion.release())
     var mcVersion: SemanticVersion = SemanticVersion.release()

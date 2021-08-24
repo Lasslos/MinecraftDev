@@ -11,7 +11,6 @@
 package com.demonwav.mcdev.platform.velocity
 
 import com.demonwav.mcdev.asset.PlatformAssets
-import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
@@ -31,7 +30,6 @@ object VelocityModuleType : AbstractModuleType<VelocityModule>("com.velocitypowe
     override val platformType = PlatformType.VELOCITY
     override val icon = PlatformAssets.VELOCITY_ICON
     override val id = ID
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
 
     override val ignoredAnnotations =
         listOf(VelocityConstants.SUBSCRIBE_ANNOTATION, VelocityConstants.PLUGIN_ANNOTATION)

@@ -11,7 +11,6 @@
 package com.demonwav.mcdev.platform.adventure
 
 import com.demonwav.mcdev.asset.PlatformAssets
-import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
@@ -30,8 +29,6 @@ object AdventureModuleType : AbstractModuleType<AdventureModule>(
 
     override val icon: Icon = PlatformAssets.ADVENTURE_ICON
     override val isIconSecondary = true
-
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
 
     override val ignoredAnnotations = emptyList<String>()
     override val listenerAnnotations = emptyList<String>()

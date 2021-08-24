@@ -10,7 +10,6 @@
 
 package com.demonwav.mcdev.platform
 
-import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
 import com.demonwav.mcdev.insight.generation.ui.EventGenerationPanel
 import com.demonwav.mcdev.util.findContainingClass
@@ -37,8 +36,6 @@ abstract class AbstractModuleType<out T : AbstractModule>(val groupId: String, v
     open val isIconSecondary = false
 
     abstract val id: String
-
-    abstract val supportedLanguages: List<CreatorLanguage>
 
     abstract val ignoredAnnotations: List<String>
 

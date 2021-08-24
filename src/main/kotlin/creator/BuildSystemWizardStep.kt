@@ -115,7 +115,7 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
     private fun getSupportedLanguages(): List<CreatorLanguage> {
         var result = CreatorLanguage.values().toMutableSet()
         creator.configs.forEach {
-            result = result.intersect(it.type.type.supportedLanguages).toMutableSet()
+            result = result.intersect(it.supportedLanguages).toMutableSet()
         }
         return result.toMutableList().sorted()
     }

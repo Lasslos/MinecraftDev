@@ -19,10 +19,10 @@ import com.demonwav.mcdev.platform.BaseTemplate
 import com.demonwav.mcdev.platform.bukkit.BukkitLikeConfiguration
 import com.demonwav.mcdev.platform.bukkit.BukkitModuleType
 import com.demonwav.mcdev.platform.bukkit.data.LoadOrder
+import com.demonwav.mcdev.util.MinecraftTemplates
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_BUILD_GRADLE_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_GRADLE_PROPERTIES_TEMPLATE
-import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
-import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
+import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_MAIN_CLASS_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_PLUGIN_YML_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_POM_TEMPLATE
 import com.demonwav.mcdev.util.MinecraftTemplates.Companion.BUKKIT_SETTINGS_GRADLE_TEMPLATE
@@ -44,10 +44,7 @@ object BukkitTemplate : BaseTemplate() {
         )
 
         return project.applyTemplate(
-            when (languageType) {
-                CreatorLanguage.JAVA -> BUKKIT_JAVA_MAIN_CLASS_TEMPLATE
-                CreatorLanguage.KOTLIN -> BUKKIT_KOTLIN_MAIN_CLASS_TEMPLATE
-            },
+            MinecraftTemplates.getLanguageVariant(BUKKIT_MAIN_CLASS_TEMPLATE, languageType),
             props
         )
     }

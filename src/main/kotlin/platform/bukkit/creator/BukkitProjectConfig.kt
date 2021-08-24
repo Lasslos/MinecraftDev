@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.bukkit.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -31,6 +32,8 @@ class BukkitProjectConfig(override var type: PlatformType) :
     ProjectConfig(), BukkitLikeConfiguration, MavenCreator, GradleCreator {
 
     override lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var loadOrder: LoadOrder = LoadOrder.POSTWORLD
     var minecraftVersion: String = ""

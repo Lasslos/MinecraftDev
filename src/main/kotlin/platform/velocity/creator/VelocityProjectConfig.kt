@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.velocity.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
@@ -26,6 +27,8 @@ import java.nio.file.Path
 class VelocityProjectConfig : ProjectConfig(), MavenCreator, GradleCreator {
 
     lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var velocityApiVersion = ""
     val apiVersion: SemanticVersion

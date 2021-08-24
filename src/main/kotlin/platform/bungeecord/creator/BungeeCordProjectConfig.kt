@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.bungeecord.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -30,6 +31,8 @@ class BungeeCordProjectConfig(override var type: PlatformType) :
     ProjectConfig(), MavenCreator, GradleCreator, BukkitLikeConfiguration {
 
     override lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
 
     var minecraftVersion = ""
     val semanticMinecraftVersion: SemanticVersion

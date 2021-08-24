@@ -11,7 +11,6 @@
 package com.demonwav.mcdev.platform.liteloader
 
 import com.demonwav.mcdev.asset.PlatformAssets
-import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
@@ -26,7 +25,6 @@ object LiteLoaderModuleType : AbstractModuleType<LiteLoaderModule>("", "") {
     override val platformType = PlatformType.LITELOADER
     override val icon = PlatformAssets.LITELOADER_ICON
     override val id = ID
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
     override val ignoredAnnotations = IGNORED_ANNOTATIONS
     override val listenerAnnotations = LISTENER_ANNOTATIONS
 

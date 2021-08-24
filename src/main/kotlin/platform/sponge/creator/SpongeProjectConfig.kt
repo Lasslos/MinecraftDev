@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.sponge.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -29,6 +30,8 @@ import java.nio.file.Path
 class SpongeProjectConfig : ProjectConfig(), MavenCreator, GradleCreator {
 
     lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var spongeApiVersion = ""
     val apiVersion: SemanticVersion

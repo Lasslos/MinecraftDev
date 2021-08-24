@@ -21,6 +21,7 @@ private val commaRegex = Regex("\\s*,\\s*")
 abstract class ProjectConfig {
 
     abstract var type: PlatformType
+    abstract val supportedLanguages: List<CreatorLanguage>
     lateinit var language: CreatorLanguage
     open val preferredBuildSystem: BuildSystemType? = null
 

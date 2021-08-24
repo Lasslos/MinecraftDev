@@ -11,7 +11,6 @@
 package com.demonwav.mcdev.platform.bukkit
 
 import com.demonwav.mcdev.asset.PlatformAssets
-import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.facet.MinecraftFacet
 import com.demonwav.mcdev.platform.AbstractModuleType
 import com.demonwav.mcdev.platform.PlatformType
@@ -33,7 +32,6 @@ object SpigotModuleType : AbstractModuleType<BukkitModule<SpigotModuleType>>("or
     override val platformType = PlatformType.SPIGOT
     override val icon = PlatformAssets.SPIGOT_ICON
     override val id = ID
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
     override val ignoredAnnotations = BukkitModuleType.IGNORED_ANNOTATIONS
     override val listenerAnnotations = BukkitModuleType.LISTENER_ANNOTATIONS
     override val isEventGenAvailable = true

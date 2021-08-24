@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.fabric.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -27,6 +28,8 @@ import com.intellij.util.lang.JavaVersion
 import java.nio.file.Path
 
 class FabricProjectConfig : ProjectConfig(), GradleCreator {
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var yarnVersion = ""
     var yarnClassifier: String? = "v2"

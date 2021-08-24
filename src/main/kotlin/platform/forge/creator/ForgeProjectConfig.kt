@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.forge.creator
 
+import com.demonwav.mcdev.creator.CreatorLanguage
 import com.demonwav.mcdev.creator.ProjectConfig
 import com.demonwav.mcdev.creator.ProjectCreator
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
@@ -30,6 +31,8 @@ import java.nio.file.Path
 class ForgeProjectConfig : ProjectConfig(), GradleCreator {
 
     lateinit var mainClass: String
+
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var updateUrl: String? = null
 
