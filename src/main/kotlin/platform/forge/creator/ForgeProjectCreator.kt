@@ -15,7 +15,12 @@ import com.demonwav.mcdev.creator.BasicClassStep
 import com.demonwav.mcdev.creator.CreatorStep
 import com.demonwav.mcdev.creator.LicenseStep
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
-import com.demonwav.mcdev.creator.buildsystem.gradle.*
+import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.SimpleGradleSetupStep
 import com.demonwav.mcdev.platform.forge.util.ForgeConstants
 import com.demonwav.mcdev.platform.forge.util.ForgePackDescriptor
 import com.demonwav.mcdev.util.MinecraftVersions
@@ -27,7 +32,9 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption.*
+import java.nio.file.StandardOpenOption.CREATE
+import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
+import java.nio.file.StandardOpenOption.WRITE
 
 class Fg2ProjectCreator(
     private val rootDirectory: Path,

@@ -1,9 +1,25 @@
+/*
+ * Minecraft Dev for IntelliJ
+ *
+ * https://minecraftdev.org
+ *
+ * Copyright (c) 2021 minecraft-dev
+ *
+ * MIT License
+ */
+
 package creator
 
 import com.demonwav.mcdev.creator.MinecraftProjectCreator
 import com.demonwav.mcdev.language.LanguageType
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
-import javax.swing.*
+import javax.swing.AbstractListModel
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.ListCellRenderer
+import javax.swing.SwingConstants
 
 class LanguageChooserWizardStep(private val creator: MinecraftProjectCreator) : ModuleWizardStep() {
     private lateinit var panel: JPanel

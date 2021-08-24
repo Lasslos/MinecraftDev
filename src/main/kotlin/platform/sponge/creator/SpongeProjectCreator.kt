@@ -17,8 +17,17 @@ import com.demonwav.mcdev.creator.buildsystem.BuildDependency
 import com.demonwav.mcdev.creator.buildsystem.BuildRepository
 import com.demonwav.mcdev.creator.buildsystem.BuildSystem
 import com.demonwav.mcdev.creator.buildsystem.BuildSystemType
-import com.demonwav.mcdev.creator.buildsystem.gradle.*
-import com.demonwav.mcdev.creator.buildsystem.maven.*
+import com.demonwav.mcdev.creator.buildsystem.gradle.BasicGradleFinalizerStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleBuildSystem
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleFiles
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleGitignoreStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleSetupStep
+import com.demonwav.mcdev.creator.buildsystem.gradle.GradleWrapperStep
+import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenFinalizerStep
+import com.demonwav.mcdev.creator.buildsystem.maven.BasicMavenStep
+import com.demonwav.mcdev.creator.buildsystem.maven.CommonModuleDependencyStep
+import com.demonwav.mcdev.creator.buildsystem.maven.MavenBuildSystem
+import com.demonwav.mcdev.creator.buildsystem.maven.MavenGitignoreStep
 import com.demonwav.mcdev.util.runWriteAction
 import com.demonwav.mcdev.util.runWriteTaskInSmartMode
 import com.demonwav.mcdev.util.virtualFileOrError
@@ -32,7 +41,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
+import java.util.EnumSet
 
 sealed class SpongeProjectCreator<T : BuildSystem>(
     protected val rootDirectory: Path,

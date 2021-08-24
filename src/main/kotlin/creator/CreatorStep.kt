@@ -29,7 +29,9 @@ import com.intellij.psi.util.createSmartPointer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption.*
+import java.nio.file.StandardOpenOption.CREATE
+import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
+import java.nio.file.StandardOpenOption.WRITE
 
 /**
  * Represents a discrete kind of configuration code for a project. Project creators use these to spread implementation
