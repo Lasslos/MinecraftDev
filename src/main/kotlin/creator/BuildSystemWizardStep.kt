@@ -100,7 +100,7 @@ class BuildSystemWizardStep(private val creator: MinecraftProjectCreator) : Modu
 
         languageBox.renderer = LanguageCellRenderer
 
-        //If there is more than one item, enable it. Otherwise, don't.
+        // If there is more than one item, enable it. Otherwise, don't.
         languageBox.isEnabled = languageBox.itemCount > 1
 
         languageBox.selectedIndex = when (languageBox.itemCount) {
