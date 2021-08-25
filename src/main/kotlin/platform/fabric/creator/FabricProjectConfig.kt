@@ -29,7 +29,7 @@ import java.nio.file.Path
 
 class FabricProjectConfig : ProjectConfig(), GradleCreator {
 
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
 
     var yarnVersion = ""
     var yarnClassifier: String? = "v2"

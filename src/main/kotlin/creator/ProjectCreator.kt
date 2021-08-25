@@ -55,12 +55,12 @@ abstract class BaseProjectCreator(
 
     protected fun createClassStep(
         qualifiedClassName: String,
-        languageType: CreatorLanguage,
+        language: CreatorLanguage,
         mapper: JavaClassTextMapper
     ): BasicClassStep {
         val (packageName, className) = splitPackage(qualifiedClassName)
         val classText = mapper(packageName, className)
-        return BasicClassStep(project, buildSystem, languageType, qualifiedClassName, classText)
+        return BasicClassStep(project, buildSystem, language, qualifiedClassName, classText)
     }
 
     protected fun splitPackage(text: String): Pair<String, String> {

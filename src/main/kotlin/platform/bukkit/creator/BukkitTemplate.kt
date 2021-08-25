@@ -36,7 +36,7 @@ object BukkitTemplate : BaseTemplate() {
         project: Project,
         packageName: String,
         className: String,
-        languageType: CreatorLanguage
+        language: CreatorLanguage
     ): String {
         val props = mapOf(
             "PACKAGE" to packageName,
@@ -44,14 +44,14 @@ object BukkitTemplate : BaseTemplate() {
         )
 
         return project.applyTemplate(
-            MinecraftTemplates.getLanguageVariant(BUKKIT_MAIN_CLASS_TEMPLATE, languageType),
+            MinecraftTemplates.getLanguageVariant(BUKKIT_MAIN_CLASS_TEMPLATE, language),
             props
         )
     }
 
-    fun applyPom(project: Project, languageType: CreatorLanguage): String {
+    fun applyPom(project: Project, language: CreatorLanguage): String {
         val properties = BasicMavenStep.pluginVersions.toMutableMap()
-        if (languageType == CreatorLanguage.KOTLIN) {
+        if (language == CreatorLanguage.KOTLIN) {
             properties["USE_KOTLIN"] = "true"
         }
         return project.applyTemplate(BUKKIT_POM_TEMPLATE, properties)
@@ -61,13 +61,13 @@ object BukkitTemplate : BaseTemplate() {
         return project.applyTemplate(BUKKIT_SUBMODULE_POM_TEMPLATE, BasicMavenStep.pluginVersions)
     }
 
-    fun applyBuildGradle(project: Project, buildSystem: BuildSystem, languageType: CreatorLanguage): String {
+    fun applyBuildGradle(project: Project, buildSystem: BuildSystem, language: CreatorLanguage): String {
         val props = mutableMapOf(
             "GROUP_ID" to buildSystem.groupId,
             "PLUGIN_VERSION" to buildSystem.version
         )
         props[
-            when (languageType) {
+            when (language) {
                 CreatorLanguage.JAVA -> "USE_JAVA"
                 CreatorLanguage.KOTLIN -> "USE_KOTLIN"
             }

@@ -93,7 +93,7 @@ interface CreatorStep {
 class BasicClassStep(
     private val project: Project,
     private val buildSystem: BuildSystem,
-    private val languageType: CreatorLanguage,
+    private val language: CreatorLanguage,
     private val className: String,
     private val classText: String,
     private val openInEditor: Boolean = true,
@@ -107,7 +107,7 @@ class BasicClassStep(
 
             val sourceDir = getMainClassDirectory(rootProvider(buildSystem), files)
 
-            val fileEnding = languageType.fileEnding
+            val fileEnding = language.fileEnding
             val classFile = CreatorStep.writeTextToFile(project, sourceDir, "$className$fileEnding", classText)
 
             if (openInEditor) {

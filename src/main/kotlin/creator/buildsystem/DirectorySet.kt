@@ -21,13 +21,13 @@ data class DirectorySet(
     val testResourceDirectory: Path
 ) {
     companion object {
-        fun create(dir: Path, languageType: CreatorLanguage = CreatorLanguage.JAVA): DirectorySet {
+        fun create(dir: Path, language: CreatorLanguage = CreatorLanguage.JAVA): DirectorySet {
             val sourceDirectory = dir.resolve(
-                "src/main/" + if (languageType == CreatorLanguage.JAVA) "java" else "kotlin"
+                "src/main/${language.directory}"
             )
             val resourceDirectory = dir.resolve("src/main/resources")
             val testSourceDirectory =
-                dir.resolve("src/test/" + if (languageType == CreatorLanguage.JAVA) "java" else "kotlin")
+                dir.resolve("src/test/${language.directory}")
             val testResourceDirectory = dir.resolve("src/test/resources")
             Files.createDirectories(sourceDirectory)
             Files.createDirectories(resourceDirectory)

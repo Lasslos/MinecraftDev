@@ -31,7 +31,7 @@ class SpongeProjectConfig : ProjectConfig(), MavenCreator, GradleCreator {
 
     lateinit var mainClass: String
 
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
 
     var spongeApiVersion = ""
     val apiVersion: SemanticVersion
