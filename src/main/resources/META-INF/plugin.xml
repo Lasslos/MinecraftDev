@@ -792,6 +792,10 @@
         <registryKey defaultValue="true" description="Enable the Minecraft Wizard finalizer step." key="mcdev.wizard.finalizer"/>
     </extensions>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <configurationType implementation="com.demonwav.mcdev.run.MinecraftConfigurationType"/>
+    </extensions>
+
     <extensions defaultExtensionNs="org.jetbrains.plugins.gradle">
         <projectResolve implementation="com.demonwav.mcdev.platform.mcp.gradle.McpProjectResolverExtension"/>
         <projectResolve implementation="com.demonwav.mcdev.platform.mcp.vanillagradle.VanillaGradleProjectResolverExtension"/>
