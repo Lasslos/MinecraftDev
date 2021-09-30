@@ -51,9 +51,7 @@ object BukkitTemplate : BaseTemplate() {
 
     fun applyPom(project: Project, language: CreatorLanguage): String {
         val properties = BasicMavenStep.pluginVersions.toMutableMap()
-        if (language == CreatorLanguage.KOTLIN) {
-            properties["USE_KOTLIN"] = "true"
-        }
+        properties["USE_${language.name}"] = "true"
         return project.applyTemplate(BUKKIT_POM_TEMPLATE, properties)
     }
 
@@ -66,12 +64,7 @@ object BukkitTemplate : BaseTemplate() {
             "GROUP_ID" to buildSystem.groupId,
             "PLUGIN_VERSION" to buildSystem.version
         )
-        props[
-            when (language) {
-                CreatorLanguage.JAVA -> "USE_JAVA"
-                CreatorLanguage.KOTLIN -> "USE_KOTLIN"
-            }
-        ] = "true"
+        props["USE_${language.name}"] = "true"
 
         return project.applyTemplate(BUKKIT_BUILD_GRADLE_TEMPLATE, props)
     }
