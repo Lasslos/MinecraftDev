@@ -10,6 +10,7 @@
 
 package com.demonwav.mcdev.platform.mixin.util
 
+import com.demonwav.mcdev.platform.mixin.action.FindMixinsAction
 import com.demonwav.mcdev.platform.mixin.util.MixinConstants.Annotations.ACCESSOR
 import com.demonwav.mcdev.platform.mixin.util.MixinConstants.Annotations.INVOKER
 import com.demonwav.mcdev.platform.mixin.util.MixinConstants.Annotations.MIXIN
@@ -18,16 +19,24 @@ import com.demonwav.mcdev.platform.mixin.util.MixinConstants.Classes.CALLBACK_IN
 import com.demonwav.mcdev.platform.mixin.util.MixinConstants.Classes.CALLBACK_INFO_RETURNABLE
 import com.demonwav.mcdev.util.cached
 import com.demonwav.mcdev.util.computeStringArray
-import com.demonwav.mcdev.util.findQualifiedClass
+import com.demonwav.mcdev.util.findModule
 import com.demonwav.mcdev.util.resolveClassArray
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiArrayType
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiClassType
+import com.intellij.psi.PsiDisjunctionType
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiIntersectionType
 import com.intellij.psi.PsiPrimitiveType
 import com.intellij.psi.PsiType
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.InheritanceUtil
+import com.intellij.psi.util.PsiModificationTracker
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.ClassNode
 
 /**
  * Returns whether the given [PsiClass] is a Mixin class with a `@Mixin` annotation.
@@ -55,20 +64,32 @@ val PsiClass.mixinAnnotation
  * @receiver The [PsiClass] to check.
  * @return A list of resolved classes defined in the Mixin targets.
  */
-val PsiClass.mixinTargets: List<PsiClass>
+val PsiClass.mixinTargets: List<ClassNode>
     get() {
         return cached {
             val mixinAnnotation = mixinAnnotation ?: return@cached emptyList()
 
             // Read class targets (value)
             val classTargets =
-                mixinAnnotation.findDeclaredAttributeValue(null)?.resolveClassArray()?.toMutableList() ?: ArrayList()
+                mixinAnnotation.findDeclaredAttributeValue(null)?.resolveClassArray()
+                    ?.mapNotNullTo(mutableListOf()) { it.bytecode } ?: mutableListOf()
 
             // Read and add string targets (targets)
             mixinAnnotation.findDeclaredAttributeValue("targets")?.computeStringArray()
-                ?.mapNotNullTo(classTargets) { name -> findQualifiedClass(name.replace('/', '.'), mixinAnnotation) }
+                ?.mapNotNullTo(classTargets) { name ->
+                    findClassNodeByQualifiedName(
+                        project,
+                        findModule(),
+                        name.replace('/', '.')
+                    )
+                }
             classTargets
         }
+    }
+
+val PsiClass.bytecode: ClassNode?
+    get() = cached(PsiModificationTracker.MODIFICATION_COUNT) {
+        findClassNodeByPsiClass(this)
     }
 
 /**
@@ -97,10 +118,10 @@ val PsiClass.isAccessorMixin: Boolean
         }
 
         val targets = mixinTargets
-        return targets.isNotEmpty() && !targets.any(PsiClass::isInterface)
+        return targets.isNotEmpty() && !targets.any { it.hasAccess(Opcodes.ACC_INTERFACE) }
     }
 
-fun callbackInfoType(project: Project): PsiType? =
+fun callbackInfoType(project: Project): PsiType =
     PsiType.getTypeByName(CALLBACK_INFO, project, GlobalSearchScope.allScope(project))
 
 fun callbackInfoReturnableType(project: Project, context: PsiElement, returnType: PsiType): PsiType? {
@@ -119,3 +140,44 @@ fun callbackInfoReturnableType(project: Project, context: PsiElement, returnType
 
 fun argsType(project: Project): PsiType =
     PsiType.getTypeByName(ARGS, project, GlobalSearchScope.allScope(project))
+
+fun isAssignable(left: PsiType, right: PsiType): Boolean {
+    return when {
+        left is PsiIntersectionType -> left.conjuncts.all { isAssignable(it, right) }
+        right is PsiIntersectionType -> right.conjuncts.any { isAssignable(left, it) }
+        left is PsiDisjunctionType -> left.disjunctions.any { isAssignable(it, right) }
+        right is PsiDisjunctionType -> isAssignable(left, right.leastUpperBound)
+        left is PsiArrayType -> right is PsiArrayType && isAssignable(left.componentType, right.componentType)
+        else -> {
+            if (left !is PsiClassType || right !is PsiClassType) {
+                return false
+            }
+            val leftClass = left.resolve() ?: return false
+            val rightClass = right.resolve() ?: return false
+            if (rightClass.isMixin) {
+                val isMixinAssignable = rightClass.mixinTargets.any {
+                    val stubClass = it.findStubClass(rightClass.project) ?: return@any false
+                    isClassAssignable(leftClass, stubClass)
+                }
+                if (isMixinAssignable) {
+                    return true
+                }
+            }
+            val mixins = FindMixinsAction.findMixins(rightClass, rightClass.project) ?: return false
+            return mixins.any { isClassAssignable(leftClass, it) }
+        }
+    }
+}
+
+private fun isClassAssignable(leftClass: PsiClass, rightClass: PsiClass): Boolean {
+    var result = false
+    InheritanceUtil.processSupers(rightClass, true) {
+        if (it == leftClass) {
+            result = true
+            false
+        } else {
+            true
+        }
+    }
+    return result
+}
