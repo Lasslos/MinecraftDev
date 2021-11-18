@@ -21,30 +21,39 @@ import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.roots.impl.OrderEntryUtil
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.ElementManipulator
 import com.intellij.psi.ElementManipulators
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiEllipsisType
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiKeyword
+import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiMethodReferenceExpression
 import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiModifier.ModifierConstant
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiParameterList
 import com.intellij.psi.PsiReference
+import com.intellij.psi.PsiReferenceExpression
 import com.intellij.psi.PsiType
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.filters.ElementFilter
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiTypesUtil
 import com.intellij.psi.util.TypeConversionUtil
 import com.intellij.refactoring.changeSignature.ChangeSignatureUtil
+import com.intellij.util.IncorrectOperationException
 import com.siyeh.ig.psiutils.ImportUtils
 
 // Parent
@@ -178,8 +187,15 @@ infix fun PsiElement.equivalentTo(other: PsiElement): Boolean {
 }
 
 fun PsiType?.isErasureEquivalentTo(other: PsiType?): Boolean {
-    // TODO: Do more checks for generics instead
-    return TypeConversionUtil.erasure(this) == TypeConversionUtil.erasure(other)
+    return this?.normalize() == other?.normalize()
+}
+
+fun PsiType.normalize(): PsiType {
+    var normalized = TypeConversionUtil.erasure(this)
+    if (normalized is PsiEllipsisType) {
+        normalized = normalized.toArrayType()
+    }
+    return normalized
 }
 
 val PsiMethod.nameAndParameterTypes: String
@@ -188,8 +204,10 @@ val PsiMethod.nameAndParameterTypes: String
 val <T : PsiElement> T.manipulator: ElementManipulator<T>?
     get() = ElementManipulators.getManipulator(this)
 
-inline fun <T> PsiElement.cached(crossinline compute: () -> T): T {
-    return CachedValuesManager.getCachedValue(this) { CachedValueProvider.Result.create(compute(), this) }
+inline fun <T> PsiElement.cached(vararg dependencies: Any, crossinline compute: () -> T): T {
+    return CachedValuesManager.getCachedValue(this) {
+        CachedValueProvider.Result.create(compute(), *(dependencies.toList() + this).toTypedArray())
+    }
 }
 
 fun LookupElementBuilder.withImportInsertion(toImport: List<PsiClass>): LookupElementBuilder =
@@ -229,3 +247,34 @@ val PsiElement.mcVersion: SemanticVersion?
             SemanticVersion.parse(it.getSettings().minecraftVersion ?: return@let null)
         }
     }
+
+private val REAL_NAME_KEY = Key<String>("mcdev.real_name")
+
+var PsiMember.realName: String?
+    get() = getUserData(REAL_NAME_KEY)
+    set(value) = putUserData(REAL_NAME_KEY, value)
+
+val PsiMethodReferenceExpression.hasSyntheticMethod: Boolean
+    get() {
+        // the only method reference that doesn't have a synthetic method is a direct reference to a method
+        if (referenceName == "new") return true
+        val qualifier = this.qualifier
+        if (qualifier !is PsiReferenceExpression) return true
+        return qualifier.resolve() !is PsiClass
+    }
+
+val PsiClass.psiType: PsiType
+    get() = PsiTypesUtil.getClassType(this)
+
+fun PsiElementFactory.createLiteralExpression(constant: Any?): PsiLiteralExpression {
+    return when (constant) {
+        null -> createExpressionFromText("null", null)
+        is Boolean, is Double, is Int -> createExpressionFromText(constant.toString(), null)
+        is Char -> createExpressionFromText("'${StringUtil.escapeCharCharacters(constant.toString())}'", null)
+        is Float -> createExpressionFromText("${constant}F", null)
+        is Long -> createExpressionFromText("${constant}L", null)
+        is String -> createExpressionFromText("\"${StringUtil.escapeStringCharacters(constant)}\"", null)
+
+        else -> throw IncorrectOperationException("Unsupported literal type: ${constant.javaClass.name}")
+    } as PsiLiteralExpression
+}

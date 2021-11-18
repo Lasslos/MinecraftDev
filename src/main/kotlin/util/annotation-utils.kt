@@ -19,6 +19,7 @@ import com.intellij.psi.PsiClassObjectAccessExpression
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiModifierListOwner
+import com.intellij.psi.PsiType
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 
 fun PsiModifierListOwner.findAnnotation(qualifiedName: String): PsiAnnotation? {
@@ -45,6 +46,14 @@ fun PsiAnnotationMemberValue.resolveClass(): PsiClass? {
     return (operand.type as? PsiClassType)?.resolve()
 }
 
+fun PsiAnnotationMemberValue.resolveTypeArray(): List<PsiType> {
+    return parseArray { it.resolveType() }
+}
+
+fun PsiAnnotationMemberValue.resolveType(): PsiType? {
+    return (this as? PsiClassObjectAccessExpression)?.operand?.type
+}
+
 /**
  * Returns `true` if the annotation value is present (not `null`) and
  * initialized either to a single value or an array with at least one
@@ -56,7 +65,7 @@ fun PsiAnnotationMemberValue?.isNotEmpty(): Boolean {
     return this != null && (this !is PsiArrayInitializerMemberValue || initializers.isNotEmpty())
 }
 
-private inline fun <T : Any> PsiAnnotationMemberValue.parseArray(func: (PsiAnnotationMemberValue) -> T?): List<T> {
+inline fun <T : Any> PsiAnnotationMemberValue.parseArray(func: (PsiAnnotationMemberValue) -> T?): List<T> {
     return if (this is PsiArrayInitializerMemberValue) {
         initializers.mapNotNull(func)
     } else {

@@ -10,20 +10,29 @@
 
 package com.demonwav.mcdev.platform.mixin.inspection.suppress
 
-import com.demonwav.mcdev.platform.mixin.util.mixinTargets
-import com.demonwav.mcdev.util.findContainingClass
+import com.demonwav.mcdev.platform.mixin.action.FindMixinsAction
+import com.demonwav.mcdev.platform.mixin.util.isAssignable
 import com.intellij.codeInspection.InspectionSuppressor
 import com.intellij.codeInspection.SuppressQuickFix
-import com.intellij.psi.CommonClassNames
+import com.intellij.codeInspection.dataFlow.CommonDataflow
+import com.intellij.codeInspection.dataFlow.TypeConstraint
+import com.intellij.codeInspection.dataFlow.TypeConstraints
+import com.intellij.codeInspection.dataFlow.types.DfReferenceType
+import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.JavaTokenType
+import com.intellij.psi.PsiArrayType
+import com.intellij.psi.PsiBinaryExpression
+import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiThisExpression
+import com.intellij.psi.PsiExpression
+import com.intellij.psi.PsiInstanceOfExpression
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiTypeCastExpression
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiUtil
 
 /**
- * Looks for `(SomeClass) (Object) this` expressions and suppresses the `ConstantConditions` inspection on it.
+ * Looks for `ConstantConditions` warnings on type casts and checks if they are casts to interfaces introduced by mixins
  */
 class MixinClassCastInspectionSuppressor : InspectionSuppressor {
 
@@ -32,48 +41,75 @@ class MixinClassCastInspectionSuppressor : InspectionSuppressor {
             return false
         }
 
-        val containingClass = element.findContainingClass() ?: return false
-        val targets = containingClass.mixinTargets
+        // check instanceof
+        if (element is PsiInstanceOfExpression) {
+            val castType = element.checkType?.type ?: return false
+            var operand = PsiUtil.skipParenthesizedExprDown(element.operand) ?: return false
+            while (operand is PsiTypeCastExpression) {
+                operand = PsiUtil.skipParenthesizedExprDown(operand.operand) ?: return false
+            }
+            val realType = getRealType(operand) ?: return false
+            return isAssignable(castType, realType)
+        }
 
-        if (targets.isEmpty()) {
-            return false
+        // check == and !=
+        if (element is PsiBinaryExpression && (
+            element.operationSign.tokenType == JavaTokenType.EQEQ ||
+                element.operationSign.tokenType == JavaTokenType.NE
+            )
+        ) {
+            val rightType = element.rOperand?.let(this::getTypeConstraint) ?: return false
+            val leftType = getTypeConstraint(element.lOperand) ?: return false
+            val isTypeWarning = leftType.meet(rightType) == TypeConstraints.BOTTOM
+            if (isTypeWarning) {
+                val leftWithMixins = addMixinsToTypeConstraint(element.project, leftType)
+                val rightWithMixins = addMixinsToTypeConstraint(element.project, rightType)
+                if (leftWithMixins == leftType && rightWithMixins == rightType) {
+                    return false
+                }
+                return leftWithMixins.meet(rightWithMixins) != TypeConstraints.BOTTOM
+            }
         }
 
         val castExpression = element.parent as? PsiTypeCastExpression ?: return false
+        val castType = castExpression.type ?: return false
+        val realType = getRealType(castExpression) ?: return false
 
-        val castType = castExpression.castType ?: return false
+        return isAssignable(castType, realType)
+    }
 
-        val project = element.project
-        val factory = JavaPsiFacade.getInstance(project).elementFactory
-
-        val toType = castType.type
-        if (
-            targets.none { t ->
-                val type = factory.createType(t)
-                // type == toType                   --> direct cast
-                // toType.superTypes.contains(type) --> cast to a subclass of the current mixin
-                // t.superTypes.contains(toType)    --> cast to a superclass of the current mixin
-                type == toType || toType.superTypes.contains(type) || t.superTypes.contains(toType)
+    private fun addMixinsToTypeConstraint(project: Project, typeConstraint: TypeConstraint): TypeConstraint {
+        val psiType = typeConstraint.getPsiType(project) ?: return typeConstraint
+        val targetClass = when (psiType) {
+            is PsiArrayType -> (psiType.deepComponentType as? PsiClassType)?.resolve()
+            is PsiClassType -> psiType.resolve()
+            else -> null
+        } ?: return typeConstraint
+        val mixins = FindMixinsAction.findMixins(targetClass, project) ?: return typeConstraint
+        if (mixins.isEmpty()) return typeConstraint
+        val elementFactory = JavaPsiFacade.getElementFactory(project)
+        val mixinTypes = mixins.map { mixinClass ->
+            var type: PsiType = elementFactory.createType(mixinClass)
+            if (psiType is PsiArrayType) {
+                repeat(psiType.arrayDimensions) {
+                    type = type.createArrayType()
+                }
             }
-        ) {
-            return false
+            if (typeConstraint.isExact) {
+                TypeConstraints.exact(type)
+            } else {
+                TypeConstraints.instanceOf(type)
+            }
         }
+        return typeConstraint.join(mixinTypes.reduce(TypeConstraint::join))
+    }
 
-        // we're looking for (SomeClass) (Object) this
-        // So the operand of the first cast `(SomeClass)` must be `(Object) this`, another cast
-        val operand = castExpression.operand as? PsiTypeCastExpression ?: return false
+    private fun getRealType(expression: PsiExpression): PsiType? {
+        return getTypeConstraint(expression)?.getPsiType(expression.project)
+    }
 
-        val type = PsiType.getTypeByName(
-            CommonClassNames.JAVA_LANG_OBJECT,
-            project,
-            GlobalSearchScope.allScope(project)
-        )
-        if (operand.castType?.type != type) {
-            return false
-        }
-
-        // If the operand of the operand is `this`, then this is the inspection we want to suppress
-        return operand.operand is PsiThisExpression
+    private fun getTypeConstraint(expression: PsiExpression): TypeConstraint? {
+        return (CommonDataflow.getDfType(expression) as? DfReferenceType)?.constraint
     }
 
     override fun getSuppressActions(element: PsiElement?, toolId: String): Array<out SuppressQuickFix> =
