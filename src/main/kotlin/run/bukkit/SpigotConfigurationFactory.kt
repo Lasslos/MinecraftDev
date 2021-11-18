@@ -11,6 +11,7 @@
 package com.demonwav.mcdev.run.bukkit
 
 import com.demonwav.mcdev.asset.PlatformAssets
+import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.run.MinecraftConfigurationType
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
@@ -29,9 +30,10 @@ class SpigotConfigurationFactory(type: ConfigurationType) : ConfigurationFactory
     override fun getName() = "Spigot"
     override fun getIcon() = PlatformAssets.SPIGOT_ICON
 
-    override fun createTemplateConfiguration(project: Project): RunConfiguration = BukkitRunConfigurationBase(
+    override fun createTemplateConfiguration(project: Project): RunConfiguration = BukkitRunConfiguration(
         project,
-        this
+        this,
+        PlatformType.SPIGOT
     )
 
     override fun getOptionsClass(): Class<out BaseState> {

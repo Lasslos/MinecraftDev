@@ -11,6 +11,7 @@
 package com.demonwav.mcdev.run.bukkit
 
 import com.intellij.execution.configurations.RunConfigurationOptions
+import com.intellij.openapi.components.StoredProperty
 
 /**
  * All options, such as Minecraft Version, are stored here.
@@ -18,6 +19,18 @@ import com.intellij.execution.configurations.RunConfigurationOptions
  */
 
 class BukkitRunConfigurationOptions : RunConfigurationOptions() {
-    // TODO: Store minecraft version, run args and if bukkit, spigot or paper should be used.
-    //  It is also possible to get that from the plugin.yml, that would be tough, though.
+    private val runOptionsStored: StoredProperty<String?> = string("nogui").provideDelegate(this, "runOptions")
+    private val minecraftVersionStored: StoredProperty<String?> = string(null).provideDelegate(this, "minecraftVersion")
+
+    var runOptions: String?
+        get() = runOptionsStored.getValue(this)
+        set(value) {
+            runOptionsStored.setValue(this, value)
+        }
+
+    var minecraftVersion: String?
+        get() = minecraftVersionStored.getValue(this)
+        set(value) {
+            minecraftVersionStored.setValue(this, value)
+        }
 }

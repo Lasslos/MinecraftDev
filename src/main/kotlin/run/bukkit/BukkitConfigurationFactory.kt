@@ -11,6 +11,7 @@
 package com.demonwav.mcdev.run.bukkit
 
 import com.demonwav.mcdev.asset.PlatformAssets
+import com.demonwav.mcdev.platform.PlatformType
 import com.demonwav.mcdev.run.MinecraftConfigurationType
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
@@ -28,7 +29,11 @@ class BukkitConfigurationFactory(type: ConfigurationType) : ConfigurationFactory
     override fun getIcon() = PlatformAssets.BUKKIT_ICON
     override fun getName() = "Bukkit"
 
-    override fun createTemplateConfiguration(project: Project) = BukkitRunConfigurationBase(project, this)
+    override fun createTemplateConfiguration(project: Project) = BukkitRunConfiguration(
+        project,
+        this,
+        PlatformType.BUKKIT
+    )
 
     override fun getOptionsClass(): Class<out BaseState> {
         return BukkitRunConfigurationOptions::class.java
