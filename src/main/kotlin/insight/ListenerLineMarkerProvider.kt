@@ -26,6 +26,7 @@ import com.intellij.psi.util.PsiExpressionTrimRenderer
 import com.intellij.util.Function
 import javax.swing.Icon
 import org.jetbrains.uast.UIdentifier
+import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.toUElementOfType
 
 /**
@@ -40,7 +41,8 @@ class ListenerLineMarkerProvider : LineMarkerProviderDescriptor() {
             return null
         }
 
-        if (element.toUElementOfType<UIdentifier>()?.uastEventListener == null) {
+        val identifier = element.toUElementOfType<UIdentifier>() ?: return null
+        if (identifier.uastParent !is UMethod || identifier.uastEventListener == null) {
             return null
         }
 

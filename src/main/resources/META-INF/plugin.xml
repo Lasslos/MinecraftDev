@@ -34,7 +34,7 @@
     </change-notes>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="203.7148.57" until-build="203.*"/>
+    <idea-version since-build="211.4961.33" until-build="211.*"/>
 
     <extensionPoints>
         <extensionPoint name="mixinSelectorParser" interface="com.demonwav.mcdev.platform.mixin.reference.MixinSelectorParser" dynamic="true" />
@@ -207,6 +207,7 @@
         <fileIconProvider implementation="com.demonwav.mcdev.platform.bukkit.BukkitFileIconProvider"/>
         <library.presentationProvider implementation="com.demonwav.mcdev.platform.bukkit.framework.BukkitPresentationProvider" />
         <library.presentationProvider implementation="com.demonwav.mcdev.platform.bukkit.framework.SpigotPresentationProvider" />
+        <library.presentationProvider implementation="com.demonwav.mcdev.platform.bukkit.framework.OldPaperPresentationProvider" />
         <library.presentationProvider implementation="com.demonwav.mcdev.platform.bukkit.framework.PaperPresentationProvider" />
         <!--endregion-->
 
@@ -214,22 +215,24 @@
         <!---->
 
         <!-- Sponge Line Marker Provider -->
-        <codeInsight.lineMarkerProvider language="" implementationClass="com.demonwav.mcdev.platform.sponge.color.SpongeColorLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language=""
+                                        implementationClass="com.demonwav.mcdev.platform.sponge.color.SpongeColorLineMarkerProvider"/>
 
-        <implicitUsageProvider implementation="com.demonwav.mcdev.platform.sponge.insight.SpongeImplicitUsageProvider" />
+        <implicitUsageProvider implementation="com.demonwav.mcdev.platform.sponge.insight.SpongeImplicitUsageProvider"/>
 
         <!-- Sponge Annotator -->
         <annotator language="UAST" implementationClass="com.demonwav.mcdev.platform.sponge.color.SpongeColorAnnotator"/>
 
-        <completion.contributor language="JAVA" implementationClass="com.demonwav.mcdev.platform.sponge.completion.SpongeGetterFilterCompletionContributor" />
-        <psi.referenceContributor language="JAVA" implementation="com.demonwav.mcdev.platform.sponge.reference.SpongeReferenceContributor" />
-        <completion.confidence language="JAVA" implementationClass="com.demonwav.mcdev.platform.sponge.completion.SpongeCompletionConfidence"
-                               order="before javaSkipAutopopupInStrings" />
+        <psi.referenceContributor language="UAST"
+                                  implementation="com.demonwav.mcdev.platform.sponge.reference.SpongeReferenceContributor"/>
 
-        <library.presentationProvider implementation="com.demonwav.mcdev.platform.sponge.framework.SpongePresentationProvider" />
-        <importFilter implementation="com.demonwav.mcdev.platform.sponge.SpongeImportFilter" />
+        <library.presentationProvider
+            implementation="com.demonwav.mcdev.platform.sponge.framework.SpongePresentationProvider"/>
+        <importFilter implementation="com.demonwav.mcdev.platform.sponge.SpongeImportFilter"/>
 
-        <lang.inspectionSuppressor language="JAVA" implementationClass="com.demonwav.mcdev.platform.sponge.inspection.suppress.SpongeGetterParamOptionalInspectionSuppressor" />
+        <lang.inspectionSuppressor language="JAVA"
+                                   implementationClass="com.demonwav.mcdev.platform.sponge.inspection.suppress.SpongeGetterParamOptionalInspectionSuppressor"/>
+
         <!--endregion-->
 
         <!--region FORGE-->
@@ -282,6 +285,16 @@
         <completion.contributor language="Access Transformers" implementationClass="com.demonwav.mcdev.platform.mcp.at.completion.AtCompletionContributor" />
         <gotoDeclarationHandler implementation="com.demonwav.mcdev.platform.mcp.at.AtGotoDeclarationHandler" />
         <annotator language="Access Transformers" implementationClass="com.demonwav.mcdev.platform.mcp.at.AtAnnotator"/>
+
+        <!-- access widener file type -->
+        <fileType name="Access Widener" language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwFileType" fieldName="INSTANCE" patterns="*.accesswidener" />
+        <lang.parserDefinition language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="com.demonwav.mcdev.platform.mcp.aw.AwColorSettingsPage" />
+        <lang.commenter language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwCommenter" />
+        <typedHandler implementation="com.demonwav.mcdev.platform.mcp.aw.AwTypedHandlerDelegate" />
+        <annotator language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwAnnotator"/>
+        <completion.contributor language="Access Widener" implementationClass="com.demonwav.mcdev.platform.mcp.aw.AwCompletionContributor"/>
 
         <moduleService serviceImplementation="com.demonwav.mcdev.platform.mcp.McpModuleSettings"/>
 
@@ -409,14 +422,14 @@
 
         <localInspection displayName="@Getter targeted method does not exist"
                          groupName="Sponge"
-                         language="JAVA"
+                         language="UAST"
                          enabledByDefault="true"
                          level="ERROR"
                          hasStaticDescription="true"
                          implementationClass="com.demonwav.mcdev.platform.sponge.inspection.SpongeInvalidGetterTargetInspection"/>
         <localInspection displayName="Parameter's type is not assignable to its @Getter method return type"
                          groupName="Sponge"
-                         language="JAVA"
+                         language="UAST"
                          enabledByDefault="true"
                          level="ERROR"
                          hasStaticDescription="true"
@@ -660,6 +673,14 @@
                          implementationClass="com.demonwav.mcdev.platform.mixin.inspection.implements.DuplicateInterfacePrefixInspection"/>
 
         <!-- Injector Inspections -->
+        <localInspection displayName="Implicit constructor invoker"
+                         shortName="ImplicitConstructorInvoker"
+                         groupName="Mixin"
+                         language="JAVA"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         hasStaticDescription="true"
+                         implementationClass="com.demonwav.mcdev.platform.mixin.inspection.injector.ImplicitConstructorInvokerInspection"/>
         <localInspection displayName="@Inject into Constructor"
                          shortName="InjectIntoConstructor"
                          groupName="Mixin"

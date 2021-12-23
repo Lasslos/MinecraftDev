@@ -122,6 +122,13 @@ inline fun <T : Collection<*>> T.ifEmpty(func: () -> Unit): T {
     return this
 }
 
+inline fun <T : Collection<*>?> T.ifNullOrEmpty(func: () -> Unit): T {
+    if (this == null || isEmpty()) {
+        func()
+    }
+    return this
+}
+
 inline fun <T : Collection<*>> T.ifNotEmpty(func: (T) -> Unit): T {
     if (isNotEmpty()) {
         func(this)
@@ -238,8 +245,8 @@ fun String.getSimilarity(text: String, bonus: Int = 0): Int {
         return 1_000_000 + bonus // exact match
     }
 
-    val lowerCaseThis = this.toLowerCase()
-    val lowerCaseText = text.toLowerCase()
+    val lowerCaseThis = this.lowercase(Locale.ENGLISH)
+    val lowerCaseText = text.lowercase(Locale.ENGLISH)
 
     if (lowerCaseThis == lowerCaseText) {
         return 100_000 + bonus // lowercase exact match
@@ -300,7 +307,7 @@ fun String.toPackageName(): String {
     return if (packageName.isEmpty()) {
         "_"
     } else {
-        packageName.toLowerCase(Locale.ROOT)
+        packageName.lowercase(Locale.ENGLISH)
     }
 }
 
@@ -309,3 +316,14 @@ inline fun <reified T> Iterable<*>.firstOfType(): T? {
 }
 
 fun libraryKind(id: String): LibraryKind = LibraryKind.findById(id) ?: LibraryKind.create(id)
+
+fun String.capitalize(): String =
+    replaceFirstChar {
+        if (it.isLowerCase()) {
+            it.titlecase(Locale.ENGLISH)
+        } else {
+            it.toString()
+        }
+    }
+
+fun String.decapitalize(): String = replaceFirstChar { it.lowercase(Locale.ENGLISH) }

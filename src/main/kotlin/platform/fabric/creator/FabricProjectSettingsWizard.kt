@@ -258,9 +258,9 @@ class FabricProjectSettingsWizard(private val creator: MinecraftProjectCreator) 
         }
         if (conf.loomVersion >= SemanticVersion.release(0, 7)) {
             // TemplateMakerFabric incorrectly indicates loom 0.8 requires Gradle 6...
-            conf.gradleVersion = SemanticVersion.release(7, 1, 1)
+            conf.gradleVersion = SemanticVersion.release(7, 3)
         }
-        conf.environment = when ((environmentBox.selectedItem as? String)?.toLowerCase(Locale.ROOT)) {
+        conf.environment = when ((environmentBox.selectedItem as? String)?.lowercase(Locale.ENGLISH)) {
             "client" -> Side.CLIENT
             "server" -> Side.SERVER
             else -> Side.NONE

@@ -45,9 +45,9 @@ class GradleBuildSystem(
     ): Iterable<CreatorStep> {
         val project = module.project
 
-        val baseName = artifactId.toLowerCase(Locale.ENGLISH)
+        val baseName = artifactId.lowercase(Locale.ENGLISH)
         val names = mutableListOf("$baseName-common")
-        names += types.map { "$baseName-${it.name.toLowerCase(Locale.ENGLISH)}" }
+        names += types.map { "$baseName-${it.name.lowercase(Locale.ENGLISH)}" }
 
         val buildText = BuildSystemTemplate.applyBuildGradle(project, this)
         val propText = BuildSystemTemplate.applyGradleProp(project)
@@ -87,7 +87,7 @@ class GradleBuildSystem(
     }
 
     companion object {
-        val DEFAULT_WRAPPER_VERSION = SemanticVersion.release(7, 1, 1)
+        val DEFAULT_WRAPPER_VERSION = SemanticVersion.release(7, 3)
     }
 }
 

@@ -35,6 +35,7 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption.CREATE
 import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 import java.nio.file.StandardOpenOption.WRITE
+import java.util.Locale
 
 class Fg2ProjectCreator(
     private val rootDirectory: Path,
@@ -103,10 +104,11 @@ open class Fg3ProjectCreator(
     protected val buildSystem: GradleBuildSystem,
     protected val config: ForgeProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
-
-    private fun setupMainClassStep(): BasicClassStep {
-        return createClassStep(config.mainClass, config.language) { packageName, className ->
-            if (config.mcVersion >= MinecraftVersions.MC1_17) {
+    private fun setupMainClassStep(): BasicJavaClassStep {
+        return createJavaClassStep(config.mainClass) { packageName, className ->
+            if (config.mcVersion >= MinecraftVersions.MC1_18) {
+                Fg3Template.apply1_18MainClass(project, buildSystem, config, packageName, className)
+            } else if (config.mcVersion >= MinecraftVersions.MC1_17) {
                 Fg3Template.apply1_17MainClass(project, buildSystem, config, packageName, className)
             } else {
                 Fg3Template.applyMainClass(project, buildSystem, config, packageName, className)
@@ -116,7 +118,7 @@ open class Fg3ProjectCreator(
 
     protected fun transformModName(modName: String?): String {
         modName ?: return "examplemod"
-        return modName.toLowerCase().replace(" ", "")
+        return modName.lowercase(Locale.ENGLISH).replace(" ", "")
     }
 
     protected fun createGradleFiles(hasData: Boolean): GradleFiles<String> {
@@ -180,7 +182,7 @@ open class Fg3ProjectCreator(
     }
 
     companion object {
-        val FG5_WRAPPER_VERSION = SemanticVersion.release(7, 1, 1)
+        val FG5_WRAPPER_VERSION = SemanticVersion.release(7, 3)
     }
 }
 
