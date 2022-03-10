@@ -104,8 +104,8 @@ open class Fg3ProjectCreator(
     protected val buildSystem: GradleBuildSystem,
     protected val config: ForgeProjectConfig
 ) : BaseProjectCreator(rootModule, buildSystem) {
-    private fun setupMainClassStep(): BasicJavaClassStep {
-        return createJavaClassStep(config.mainClass) { packageName, className ->
+    private fun setupMainClassStep(): BasicClassStep {
+        return createClassStep(config.mainClass, config.language) { packageName, className ->
             if (config.mcVersion >= MinecraftVersions.MC1_18) {
                 Fg3Template.apply1_18MainClass(project, buildSystem, config, packageName, className)
             } else if (config.mcVersion >= MinecraftVersions.MC1_17) {

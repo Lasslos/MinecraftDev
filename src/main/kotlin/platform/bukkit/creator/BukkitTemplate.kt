@@ -64,7 +64,7 @@ object BukkitTemplate : BaseTemplate() {
             "GROUP_ID" to buildSystem.groupId,
             "PLUGIN_VERSION" to buildSystem.version,
             "JAVA_VERSION" to config.javaVersion.feature,
-            "USE_${language.name}" to "true"
+            "USE_${config.language.name}" to "true"
         )
 
         return project.applyTemplate(BUKKIT_BUILD_GRADLE_TEMPLATE, props)
