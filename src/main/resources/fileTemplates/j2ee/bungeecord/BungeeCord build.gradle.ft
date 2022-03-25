@@ -1,4 +1,13 @@
-apply plugin: 'java'
+plugins {
+    id 'idea'
+    #if(${USE_JAVA})
+        id 'java'
+    #end
+    #if(${USE_KOTLIN})
+        id "org.jetbrains.kotlin.jvm" version "1.6.10"
+        id "com.github.johnrengelman.shadow" version "7.1.2"
+    #end
+}
 
 group = '${GROUP_ID}'
 version = '${PLUGIN_VERSION}'
@@ -8,6 +17,9 @@ repositories {
 }
 
 dependencies {
+    #if (${USE_KOTLIN})
+        implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    #end
 }
 
 def targetJavaVersion = 8
@@ -26,6 +38,13 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props
@@ -35,3 +54,11 @@ processResources {
         expand props
     }
 }
+
+#if (${USE_KOTLIN})
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+#end

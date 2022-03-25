@@ -198,7 +198,7 @@ class MinecraftTemplates : FileTemplateGroupDescriptorFactory {
         const val BUKKIT_POM_TEMPLATE = "Bukkit pom.xml"
         const val BUKKIT_SUBMODULE_POM_TEMPLATE = "Bukkit Submodule pom.xml"
 
-        const val BUNGEECORD_MAIN_CLASS_TEMPLATE = "BungeeCord Main Class.java"
+        const val BUNGEECORD_MAIN_CLASS_TEMPLATE = "BungeeCord Main Class"
         const val BUNGEECORD_PLUGIN_YML_TEMPLATE = "BungeeCord bungee.yml"
         const val BUNGEECORD_BUILD_GRADLE_TEMPLATE = "BungeeCord build.gradle"
         const val BUNGEECORD_SUBMODULE_BUILD_GRADLE_TEMPLATE = "BungeeCord Submodule build.gradle"

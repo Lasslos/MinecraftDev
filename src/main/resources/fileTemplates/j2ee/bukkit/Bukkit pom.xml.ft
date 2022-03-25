@@ -16,13 +16,14 @@
       <java.version>1.8</java.version>
     #end
     #if (${USE_KOTLIN})
-      <kotlin.version>1.5.21</kotlin.version>
+      <kotlin.version>1.6.20</kotlin.version>
     #end
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
-    <plugins>
+      <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+      <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -48,6 +49,25 @@
           </execution>
         </executions>
       </plugin>
+        #if (${USE_KOTLIN})
+        <plugin>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-maven-plugin</artifactId>
+            <version>${kotlin.version}</version>
+            <executions>
+                <execution>
+                    <id>compile</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <jvmTarget>1.8</jvmTarget>
+            </configuration>
+        </plugin>
+        #end
     </plugins>
     <resources>
       <resource>

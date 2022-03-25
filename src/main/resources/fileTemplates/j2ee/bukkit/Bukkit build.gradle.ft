@@ -1,9 +1,11 @@
 plugins {
+    id 'idea'
     #if(${USE_JAVA})
         id 'java'
     #end
     #if(${USE_KOTLIN})
-        id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+        id "org.jetbrains.kotlin.jvm" version "1.6.10"
+        id "com.github.johnrengelman.shadow" version "7.1.2"
     #end
 }
 
@@ -44,3 +46,18 @@ processResources {
         expand props
     }
 }
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+#if (${USE_KOTLIN})
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+#end

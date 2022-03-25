@@ -44,7 +44,7 @@ sealed class BungeeCordProjectCreator<T : BuildSystem>(
 
     protected fun setupMainClassStep(): BasicClassStep {
         return createClassStep(config.mainClass, config.language) { packageName, className ->
-            BungeeCordTemplate.applyMainClass(project, packageName, className)
+            BungeeCordTemplate.applyMainClass(project, packageName, className, config.language)
         }
     }
 
@@ -66,7 +66,7 @@ class BungeeCordMavenCreator(
 ) : BungeeCordProjectCreator<MavenBuildSystem>(rootDirectory, rootModule, buildSystem, config) {
 
     override fun getSingleModuleSteps(): Iterable<CreatorStep> {
-        val pomText = BungeeCordTemplate.applyPom(project)
+        val pomText = BungeeCordTemplate.applyPom(project, config.language)
         return listOf(
             setupDependencyStep(),
             BasicMavenStep(project, rootDirectory, buildSystem, config, pomText),
@@ -110,7 +110,7 @@ class BungeeCordGradleCreator(
 ) : BungeeCordProjectCreator<GradleBuildSystem>(rootDirectory, rootModule, buildSystem, config) {
 
     override fun getSingleModuleSteps(): Iterable<CreatorStep> {
-        val buildText = BungeeCordTemplate.applyBuildGradle(project, buildSystem)
+        val buildText = BungeeCordTemplate.applyBuildGradle(project, buildSystem, config)
         val projectText = BungeeCordTemplate.applyGradleProp(project)
         val settingsText = BungeeCordTemplate.applySettingsGradle(project, buildSystem.artifactId)
         val files = GradleFiles(buildText, projectText, settingsText)

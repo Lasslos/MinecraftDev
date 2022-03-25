@@ -32,7 +32,7 @@ class BungeeCordProjectConfig(override var type: PlatformType) :
 
     override lateinit var mainClass: String
 
-    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA)
+    override val supportedLanguages: List<CreatorLanguage> = listOf(CreatorLanguage.JAVA, CreatorLanguage.KOTLIN)
 
     var minecraftVersion = ""
     val semanticMinecraftVersion: SemanticVersion
